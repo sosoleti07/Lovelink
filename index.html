@@ -25,8 +25,9 @@
       animation: beat 1.2s infinite;
       filter: drop-shadow(0 0 20px #c084fc);
       user-select: none;
+      transition: transform 0.1s;
     }
-    .heart:active { transform: scale(0.9); }
+    .heart:active { transform: scale(0.85); }
     @keyframes beat {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.15); }
@@ -39,6 +40,11 @@
       transition: opacity 0.5s;
     }
     .message.show { opacity: 1; }
+    .status {
+      margin-top: 15px;
+      color: #7c3aed;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -46,13 +52,46 @@
   <p>Notre espace rien qu'à nous...</p>
   <div class="heart" onclick="sendLove()">💜</div>
   <div class="message" id="msg">Amour envoyé ! 💜</div>
-  <script>
-    function sendLove() {
+  <div class="status" id="status">En attente d'amour...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA238mxb8N8ejOYy7gwKQIJrhyoMgREhVo",
+      authDomain: "lovelink-8d181.firebaseapp.com",
+      projectId: "lovelink-8d181",
+      storageBucket: "lovelink-8d181.firebasestorage.app",
+      messagingSenderId: "344489492288",
+      appId: "1:344489492288:web:6c655b33b3f363e15784a5",
+      databaseURL: "https://lovelink-8d181-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.sendLove = function() {
       if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
       const msg = document.getElementById('msg');
       msg.classList.add('show');
       setTimeout(() => msg.classList.remove('show'), 2000);
-    }
+      set(ref(db, 'heart'), {
+        timestamp: Date.now(),
+        love: true
+      });
+    };
+
+    onValue(ref(db, 'heart'), (snapshot) => {
+      if (snapshot.exists()) {
+        const status = document.getElementById('status');
+        status.textContent = '💜 Ton amour a envoyé un cœur !';
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        setTimeout(() => {
+          status.textContent = 'En attente d\'amour...';
+        }, 3000);
+      }
+    });
   </script>
 </body>
 </html>
