@@ -5,19 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LoveLink 💜</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: #1a0a2e;
       color: white;
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
-    h1 { color: #c084fc; font-size: 2rem; }
-    p { color: #a78bfa; }
+    h1 { color: #c084fc; font-size: 2rem; margin-bottom: 10px; }
+    p { color: #a78bfa; margin-bottom: 50px; }
+    .heart {
+      font-size: 100px;
+      cursor: pointer;
+      animation: beat 1.2s infinite;
+      filter: drop-shadow(0 0 20px #c084fc);
+      user-select: none;
+    }
+    .heart:active { transform: scale(0.9); }
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+    .message {
+      margin-top: 30px;
+      color: #c084fc;
+      font-size: 1.2rem;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .message.show { opacity: 1; }
   </style>
 </head>
 <body>
   <h1>💜 LoveLink</h1>
   <p>Notre espace rien qu'à nous...</p>
+  <div class="heart" onclick="sendLove()">💜</div>
+  <div class="message" id="msg">Amour envoyé ! 💜</div>
+  <script>
+    function sendLove() {
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      const msg = document.getElementById('msg');
+      msg.classList.add('show');
+      setTimeout(() => msg.classList.remove('show'), 2000);
+    }
+  </script>
 </body>
 </html>
